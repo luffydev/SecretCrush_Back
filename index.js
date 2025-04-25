@@ -51,6 +51,7 @@ global.app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.set('trust proxy', true);
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -86,6 +87,16 @@ app.use((request, ressource, next) => {
      // to the API (e.g. in case you use sessions)
      ressource.setHeader('Access-Control-Allow-Credentials', true);
 
+     // Récupérer l'IP de l'utilisateur
+    let userIp = request.ip;
+
+    // Si l'IP est de la forme ::ffff:127.0.0.1, on enlève le préfixe ::ffff:
+    if (userIp.startsWith('::ffff:')) {
+        userIp = userIp.substring(7); // Enlever "::ffff:"
+    }
+
+    // Attacher l'IP nettoyée à l'objet de requête
+    request.cleanedIp = userIp;
 
      if (ignoreJWT.indexOf(request.path) !== -1)
         next();
