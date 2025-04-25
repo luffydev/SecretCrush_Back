@@ -21,13 +21,15 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
         return ressource.status(200).json({success: false, error: 'invalid_email_password'});
 
     const isPasswordValid = await bcrypt.compare(password, findedUser.password);
-    
+
     if(!isPasswordValid)
         return ressource.status(200).json({success: false, error: 'invalid_email_password'});
     
 
     // user logged in update last_login
     findedUser.last_login = new Date();
+    findedUser.last_ip = request.cleanedIp;
+
     findedUser.save();
 
     let jwtPayload = {
