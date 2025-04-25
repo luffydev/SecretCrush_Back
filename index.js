@@ -7,7 +7,7 @@ const http = require('http');
 const cors = require('cors');
 const { Sequelize } = require('sequelize'); 
 
-const { SERVER_PORT, API_KEY, ENABLE_SSL, CORS_POLICY_ORIGIN, DATABASE_CONFIG } = require('./config/config');
+const { SERVER_PORT, API_KEY, ENABLE_SSL, CORS_POLICY_ORIGIN, DATABASE_CONFIG, SSL_CERTIFICATE, SSL_PRIVATE_KEY } = require('./config/config');
 const ignoreJWT = ['/account/signup', '/csrf-token', '/account/login'];
 
 // Connecting to DB
@@ -119,9 +119,13 @@ fs.readdir(__dirname + '/API', (err, files) => {
 
 if(!ENABLE_SSL)
     httpServer = http.createServer(app);
+else
+{
+    const credentials = {key : SSL_PRIVATE_KEY, cert: SSL_CERTIFICATE};
+    httpServer = http.createServer(credentials, app);
+}
 
 httpServer.listen(SERVER_PORT);
-
 console.log(" \r\n[Server] -> Launched on port : ", SERVER_PORT);
 
 module.exports = app;
