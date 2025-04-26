@@ -1,6 +1,7 @@
 const userModel = require('./../ORM/models/users');
 const {hashPassword} = require('./../utils/utils');
 const bcrypt = require('bcrypt');
+const {ENABLE_SSL} = require('./../config/config');
 
 app.post('/account/login', csrfProtection, async (request, ressource) => {
 
@@ -42,6 +43,13 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
     const {PRIVATE_KEY} = require('./../config/config');
 
     const token = jwt.sign(jwtPayload, PRIVATE_KEY, {algorithm: 'RS256', expiresIn:'24h'});
+
+    ressource.cookie('auth_token', token, {
+        httpOnly: true,
+        secure: ENABLE_SSL, 
+        maxAge: 86400000,  // durée de 24h ( a changer si il sauvegarde sa session )
+        sameSite: 'Strict', // Protection contre les attaques CSRF
+    })
 
     return ressource.status(200).json({success: true, token, token});
 })
