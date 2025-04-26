@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 const userModel = require('./../ORM/models/users');
 const validator = require('validator');
-const {verifyRecaptcha, hashPassword} = require('./../utils/utils');
+const {verifyRecaptcha, hashPassword, generateRandomString, sendMail} = require('./../utils/utils');
 
 // send form, for register a new account
 app.post('/account/signup', csrfProtection, async (request, ressource) => {
@@ -84,6 +84,9 @@ app.post('/account/signup', csrfProtection, async (request, ressource) => {
 
     // we hash our password
     payload.password = await hashPassword(payload.password);
+    payload.activation_token = generateRandomString();
+
+    sendMail('Activation de ton compte SecretCrush !', payload.email, 'activation.html', payload.activation_token);
 
     const user = await User.create(payload);
     return ressource.json({success: true});

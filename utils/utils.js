@@ -1,5 +1,8 @@
 const axios = require('axios');
-const {RECAPTCHA_SERVER_TOKEN} = require('./../config/config');
+const {RECAPTCHA_SERVER_TOKEN, SECRETCRUSH_URL} = require('./../config/config');
+const fs = require('fs');
+const path = require('path');
+
 
 async function verifyRecaptcha(token){
     try{
@@ -34,7 +37,37 @@ async function hashPassword(password){
 }
 
 
+function generateRandomString(length = 40) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+async function sendMail(subject, to, template, token, from = '"SecretCrush" <sc@liliumnetwork.fr>') {
+
+    let html = fs.readFileSync(path.join(__dirname, '../template/email/' + template), 'utf8');
+    const activationLink = SECRETCRUSH_URL + '/login?activate=' + token;
+
+    html = html.replace('{{activation_link}}', activationLink);
+
+    console.log("SENDING MAIL TO : ", to, " FROM : ", from, " SUBJECT : " + subject, " HTML LEN : " + html.length)
+
+    await smtp.sendMail({
+        from: from,
+        to: to,
+        subject: subject,
+        html: html,
+    });
+}
+
+
 module.exports = {
     hashPassword,
-    verifyRecaptcha
+    verifyRecaptcha,
+    generateRandomString,  
+    sendMail  
 }

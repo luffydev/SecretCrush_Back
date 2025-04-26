@@ -5,8 +5,10 @@ const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const { Sequelize } = require('sequelize'); 
+const nodemailer = require('nodemailer');
+const path = require('path');
 
-const { SERVER_PORT, API_KEY, ENABLE_SSL, CORS_POLICY_ORIGIN, DATABASE_CONFIG, SSL_CERTIFICATE, SSL_PRIVATE_KEY } = require('./config/config');
+const { SERVER_PORT, API_KEY, ENABLE_SSL, CORS_POLICY_ORIGIN, DATABASE_CONFIG, SSL_CERTIFICATE, SSL_PRIVATE_KEY, SMTP_CONFIG } = require('./config/config');
 const ignoreJWT = ['/account/signup', '/csrf-token', '/account/login', '/account/checkEmail'];
 
 // Connecting to DB
@@ -18,6 +20,18 @@ global.database = new Sequelize(DATABASE_CONFIG.database, DATABASE_CONFIG.user, 
     dialect: 'postgres',
     logging: false,  // Désactive les logs des requêtes SQL
 });
+
+async function sendMail(){
+
+    const html = fs.readFileSync(path.join(__dirname, 'template/email/activation.html'), 'utf8');
+
+    await smtp.sendMail({
+        from: '"SecretCrush" <activation@secretcrush.fr>',
+        to: "jeremy.vaudelet@hotmail.com",
+        subject: "Activation de ton compte SecretCrush !",
+        html: html,
+    });
+}
 
 database.authenticate().then(async () => {
     
@@ -34,7 +48,21 @@ database.authenticate().then(async () => {
 }).catch((err) => {
     console.log('[Database] -> unable to connect : ', err);
     process.exit(1);
-})
+});
+
+console.log('[Server] -> configuring SMTP with host : ', SMTP_CONFIG.host);
+
+global.smtp = nodemailer.createTransport({
+    host: SMTP_CONFIG.host,
+    port: SMTP_CONFIG.port,
+    secure: true,
+    auth:{
+        user: SMTP_CONFIG.auth.user,
+        pass: SMTP_CONFIG.auth.pass
+    },
+    /*logger: true,        // Active les logs
+    debug: true          // Active le mode debug*/
+});
 
 global.csrfProtection = csrf({
     cookie: true,  // Utiliser les cookies
