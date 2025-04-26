@@ -3,7 +3,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
-const http = require('http');
+const http = require('https');
 const cors = require('cors');
 const { Sequelize } = require('sequelize'); 
 
