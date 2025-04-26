@@ -39,7 +39,7 @@ app.post('/account/signup', csrfProtection, async (request, ressource) => {
         password: request.body.password,
         firstname: request.body.firstname,
         gender: request.body.gender,
-        birth_date: request.body.birthDate,
+        birth_date: new Date(request.body.birthDate * 1000),
         latitude: request.body.latitude,
         longitude: request.body.longitude,
         sexual_orientation: request.body.orientation,
