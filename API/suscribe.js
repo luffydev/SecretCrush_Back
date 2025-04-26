@@ -92,6 +92,25 @@ app.post('/account/signup', csrfProtection, async (request, ressource) => {
     return ressource.json({success: true});
 });
 
+app.post('/account/activate', csrfProtection, async (request, ressource) => {
+
+    if(!('token' in request.body))
+        return ressource.json({success: false, error: 'bad_request'});
+
+    let token = request.body.token;
+    
+    const User = userModel(database, Sequelize.DataTypes);
+    const findedUser = await User.findOne({where: {activation_token : token, is_activated: false}});
+
+    if(!findedUser)
+        return ressource.json({success: false, error: 'invalid_token'});
+
+    findedUser.is_activated = true;
+    findedUser.save();
+
+    return ressource.json({success: true});
+});
+
 // check if email exist in database
 app.post('/account/checkEmail', csrfProtection, async (request, ressource) => {
 

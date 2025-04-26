@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 
 const { SERVER_PORT, API_KEY, ENABLE_SSL, CORS_POLICY_ORIGIN, DATABASE_CONFIG, SSL_CERTIFICATE, SSL_PRIVATE_KEY, SMTP_CONFIG } = require('./config/config');
-const ignoreJWT = ['/account/signup', '/csrf-token', '/account/login', '/account/checkEmail'];
+const ignoreJWT = ['/account/signup', '/csrf-token', '/account/login', '/account/checkEmail', '/account/activate'];
 
 // Connecting to DB
 
