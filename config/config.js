@@ -6,8 +6,9 @@ const API_ROUTE_PREFIX = '';
 const PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '../keys/private.key'), 'utf8');
 const PUBLIC_KEY = fs.readFileSync(path.join(__dirname, '../keys/public.key'), 'utf8');
 const API_KEY   = 'c3bc7d56-e96c-4e00-ae5a-cfb74fb5a2a2';
-const ENABLE_SSL = true;
+const ENABLE_SSL = false;
 const CORS_POLICY_ORIGIN = ['https://secretcrush.fr', 'http://127.0.0.1:3000'];
+const RECAPTCHA_SERVER_TOKEN = '6LffUyUrAAAAAL51qzuGuWO98p-xz5YvN7mp4QTY';
 
 const SSL_PRIVATE_KEY = fs.readFileSync(path.join(__dirname, '../ssl/private.key'), 'utf8');
 const SSL_CERTIFICATE = fs.readFileSync(path.join(__dirname, '../ssl/certificate.crt'), 'utf8');
@@ -31,5 +32,6 @@ module.exports = {
   CORS_POLICY_ORIGIN,
   DATABASE_CONFIG,
   SSL_PRIVATE_KEY,
-  SSL_CERTIFICATE
+  SSL_CERTIFICATE,
+  RECAPTCHA_SERVER_TOKEN
 };

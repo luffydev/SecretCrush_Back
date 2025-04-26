@@ -3,12 +3,11 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
-const http = require('https');
 const cors = require('cors');
 const { Sequelize } = require('sequelize'); 
 
 const { SERVER_PORT, API_KEY, ENABLE_SSL, CORS_POLICY_ORIGIN, DATABASE_CONFIG, SSL_CERTIFICATE, SSL_PRIVATE_KEY } = require('./config/config');
-const ignoreJWT = ['/account/signup', '/csrf-token', '/account/login'];
+const ignoreJWT = ['/account/signup', '/csrf-token', '/account/login', '/account/checkEmail'];
 
 // Connecting to DB
 
@@ -95,6 +94,8 @@ app.use((request, ressource, next) => {
         userIp = userIp.substring(7); // Enlever "::ffff:"
     }
 
+    console.log('[Server] -> Recv request : ' + request.path);
+
     // Attacher l'IP nettoyée à l'objet de requête
     request.cleanedIp = userIp;
 
@@ -118,11 +119,15 @@ fs.readdir(__dirname + '/API', (err, files) => {
 // TODO : Launch as SSL Server
 
 if(!ENABLE_SSL)
+{
+    const http = require('http');
     httpServer = http.createServer(app);
+}
 else
 {
+    const https = require('https');
     const credentials = {key : SSL_PRIVATE_KEY, cert: SSL_CERTIFICATE};
-    httpServer = http.createServer(credentials, app);
+    httpServer = https.createServer(credentials, app);
 }
 
 httpServer.listen(SERVER_PORT);

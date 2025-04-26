@@ -1,4 +1,4 @@
-const userModel = require('./../ORM/models/user');
+const userModel = require('./../ORM/models/users');
 const {hashPassword} = require('./../utils/utils');
 const bcrypt = require('bcrypt');
 
@@ -6,7 +6,7 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
 
     // incomplete form return bad request
     if(!('email' in request.body) || !('password' in request.body)){
-        ressource.status(400).json({success: false, error : "bad_request"});
+        ressource.json({success: false, error : "bad_request"});
         return;
     }
 
@@ -18,12 +18,12 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
     const findedUser = await User.findOne({where : { email: email}});
 
     if(!findedUser)
-        return ressource.status(200).json({success: false, error: 'invalid_email_password'});
+        return ressource.json({success: false, error: 'invalid_email_password'});
 
     const isPasswordValid = await bcrypt.compare(password, findedUser.password);
 
     if(!isPasswordValid)
-        return ressource.status(200).json({success: false, error: 'invalid_email_password'});
+        return ressource.json({success: false, error: 'invalid_email_password'});
     
 
     // user logged in update last_login
