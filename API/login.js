@@ -74,6 +74,8 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
         secure: ENABLE_SSL, 
         maxAge: 86400000,  // durée de 24h ( a changer si il sauvegarde sa session )
         sameSite: 'Strict', // Protection contre les attaques CSRF
+        secure: true,
+        domain: 'secretcrush.fr',
     })
 
     return ressource.status(200).json({success: true, token, token});
