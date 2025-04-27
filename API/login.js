@@ -1,7 +1,29 @@
 const userModel = require('./../ORM/models/users');
-const {hashPassword} = require('./../utils/utils');
 const bcrypt = require('bcrypt');
-const {ENABLE_SSL} = require('./../config/config');
+const { ENABLE_SSL } = require('./../config/config');
+
+
+app.post('/account/check_session', csrfProtection, async(request, ressource) => {
+
+    if(!('token' in request.body))
+        return ressource.json({success: false, error:'bad_request'});
+
+    const token = request.body.token;
+
+    const jwt = require('jsonwebtoken');
+    const {PUBLIC_KEY} = require('./../config/config');
+
+    try{
+
+        const decoded = jwt.verify(token, PUBLIC_KEY, {algorithm: 'RS256'});
+        return ressource.json({success: true});
+
+    }catch (error) {
+    
+        console.error("Erreur de validation du token:", error.message);  // Afficher le message d'erreur
+        return ressource.json({ success: false, error: error.message });
+    }
+});
 
 app.post('/account/login', csrfProtection, async (request, ressource) => {
 
@@ -48,7 +70,7 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
     const token = jwt.sign(jwtPayload, PRIVATE_KEY, {algorithm: 'RS256', expiresIn:'24h'});
 
     ressource.cookie('auth_token', token, {
-        httpOnly: true,
+        httpOnly: false,
         secure: ENABLE_SSL, 
         maxAge: 86400000,  // durée de 24h ( a changer si il sauvegarde sa session )
         sameSite: 'Strict', // Protection contre les attaques CSRF
