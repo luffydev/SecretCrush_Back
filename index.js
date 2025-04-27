@@ -17,6 +17,7 @@ console.log('[Database] -> connecting to ', DATABASE_CONFIG.host, ':', DATABASE_
 
 global.database = new Sequelize(DATABASE_CONFIG.database, DATABASE_CONFIG.user, DATABASE_CONFIG.password, {
     host: DATABASE_CONFIG.host,
+    port: DATABASE_CONFIG.port,
     dialect: 'postgres',
     logging: false,  // Désactive les logs des requêtes SQL
 });
