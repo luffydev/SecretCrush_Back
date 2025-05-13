@@ -40,10 +40,14 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
 
     const findedUser = await User.findOne({where : { email: email}});
 
+    console.log("test1");
+
     if(!findedUser)
         return ressource.json({success: false, error: 'invalid_email_password'});
 
     const isPasswordValid = await bcrypt.compare(password, findedUser.password);
+
+    console.log("test3");
 
     if(!isPasswordValid)
         return ressource.json({success: false, error: 'invalid_email_password'});
@@ -75,7 +79,7 @@ app.post('/account/login', csrfProtection, async (request, ressource) => {
         maxAge: 86400000,  // durée de 24h ( a changer si il sauvegarde sa session )
         sameSite: 'Strict', // Protection contre les attaques CSRF
         secure: true,
-        domain: 'secretcrush.fr',
+        domain: ENABLE_SSL ? 'secretcrush.fr' : undefined,
     })
 
     return ressource.status(200).json({success: true, token, token});

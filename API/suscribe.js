@@ -86,10 +86,10 @@ app.post('/account/signup', csrfProtection, async (request, ressource) => {
     payload.password = await hashPassword(payload.password);
     payload.activation_token = generateRandomString();
 
-    sendMail('Activation de ton compte SecretCrush !', payload.email, 'activation.html', payload.activation_token);
+    //sendMail('Activation de ton compte SecretCrush !', payload.email, 'activation.html', payload.activation_token);
 
     const user = await User.create(payload);
-    return ressource.json({success: true});
+    return ressource.json({success: true, debug_activation_code:payload.activation_token});
 });
 
 app.post('/account/activate', csrfProtection, async (request, ressource) => {
